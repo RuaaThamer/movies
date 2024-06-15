@@ -50,10 +50,12 @@
 
     return $errors;
   }
-
+// connect to database
   function getMovies () {
-    global $movies;
-
+    global $db;
+    $sql = "SELECT * FROM movies";
+    $result = $db->query($sql);
+    $movies = $result->fetchAll();
     return $movies;
   }
 
@@ -66,27 +68,27 @@
   }
 
   function getMovie ($movie_id) {
-    global $movies;
+    global $db;
 
-    return current(array_filter($movies, function ($movie) use ($movie_id) {
-      return $movie['movie_id'] == $movie_id;
-    }));
+    $sql = "SELECT * FROM movies WHERE movie_id = {$movie_id}";
+    $result = $db->query($sql);
+    $movie = $result->fetch();
+    return $movie;
   }
 
   function addMovie ($movie) {
-    global $movies;
+    global $db;
+    global $genres;
 
-    array_push($movies, [
-      'movie_id' => end($movies)['movie_id'] + 1,
-      'movie_title' => $movie['movie_title'],
-      'director' => $movie['director'],
-      'year' => $movie['year'],
-      'genre_title' => $movie['genre_title']
-    ]);
 
-    $_SESSION['movies'] = $movies;
+    $genre_id = array_search($movie['genre_title'], $genres) + 1;
 
-    return end($movies)['movie_id'];
+    $sql = "INSERT INTO movies (movie_title, director, year, genre_id) VALUES 
+    ('{$movie ['movie_title']}',' {$movie['director']}', {$movie['year']}, {$genre_id})";
+
+    $result = $db->exec($sql);
+
+    return $db->lastInsertId();
   }
 
   function updateMovie ($movie) {
