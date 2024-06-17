@@ -1,13 +1,26 @@
 <?php
   require "data.php";
-  require "functions.php";
+// array coming from the form
+  if (isset($_POST['movie_title'])){
+    //var_dump($_POST);
+   array_push($movies, [
+      'movie_id' => end($movies)['movie_id'] + 1,
+      'movie_title' => $_POST['movie_title'],
+      'director' => $_POST['director'],
+      'year' => $_POST['year'],
+     'genre' => $_POST['genre']
+    ]);
 
+    $_SESSION['movies'] = $movies;
+  }
+// search box using array filter 
   if (isset($_GET['search'])) {
-    $movies = searchMovies($_GET['search']);
-  } else {
-    $movies = getMovies();
+    $movies = array_filter($movies, function ($movie) {
+      return strpos($movie['movie_title'], $_GET['search']) !== false;
+    });
   }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,13 +33,22 @@
 <body>
   <main class="main">
     <?php require "header.php"; ?>
+
+    <!-- the search is a action get method which is alredy set by defult -->
     <form class="form">
       <input type="search" class="form-control" name="search" placeholder="Search">
     </form>
     <section class="movies">
-      <?php foreach ($movies as $movie) : ?>
-      <a class="movie" href="movie.php?id=<?php echo $movie['movie_id']; ?>"><?php echo $movie['movie_title']; ?></a>
+
+    <!--to display data-->
+      <?php foreach ($movies as $movie) :?>
+       <!--using href to ask for spcifec movie using query string pass data throw href-->
+       <a class="movie" href="movie.php?id=<?php echo $movie ['movie_id']; ?> ">
+         <!-- $movie without s is value and 'movie_title' is the key got it from data-->
+         <?php echo $movie ['movie_title']; ?>
+       </a>
       <?php endforeach; ?>
+
     </section>
   </main>
 </body>
