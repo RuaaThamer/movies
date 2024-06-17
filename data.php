@@ -32,11 +32,15 @@
   } catch (PDOException $e) {
     $error = $e->getMessage();
     echo $error;
-    exit;
+ 
   }
 
+
+  // make call to database to get genres 
   $sql = "SELECT * FROM genres";
   $result = $db->query($sql);
   $genres = $result->fetchAll(PDO::FETCH_COLUMN, 1);
+
+  // go to 
 
 

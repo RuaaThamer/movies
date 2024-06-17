@@ -69,10 +69,15 @@
 
   function getMovie ($movie_id) {
     global $db;
+    // if you use data from user use prepard statment
+    $sql = "SELECT * FROM movies JOIN genres ON movies.genre_id = genres.genre_id WHERE movie_id = :movie_id;
 
-    $sql = "SELECT * FROM movies WHERE movie_id = {$movie_id}";
-    $result = $db->query($sql);
-    $movie = $result->fetch();
+    /*send prepared statment to db*/
+    $stmt->execute(['movie_id' => $movie_id]);
+    $movie = $stmt->fetch();
+    /*$result = $db->query($sql);*/
+    /*$movie = $result->fetch();*/
+    
     return $movie;
   }
 
@@ -80,11 +85,12 @@
     global $db;
     global $genres;
 
+    /*getting genre id from genre title*/
+    $genre_id = array_search($movie['genre_title'], $genres, ) + 1;
+   
 
-    $genre_id = array_search($movie['genre_title'], $genres) + 1;
-
-    $sql = "INSERT INTO movies (movie_title, director, year, genre_id) VALUES 
-    ('{$movie ['movie_title']}',' {$movie['director']}', {$movie['year']}, {$genre_id})";
+    $sql = "INSERT INTO movies (movie_title, director, year, genre_id) VALUES ('
+    {$movie['movie_title']}', '{$movie['director']}', {$movie['year']}, {$genre_id})";
 
     $result = $db->exec($sql);
 
